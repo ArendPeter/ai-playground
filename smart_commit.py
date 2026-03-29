@@ -21,6 +21,7 @@ def spin():
     for frame in itertools.cycle(icons):
         if stop_spinner.is_set():
             break
+        sys.stdout.write(f"\r{frame}...")
         # sys.stdout.write(f"\r{frame} Generating commit message...")
         sys.stdout.flush()
         time.sleep(0.1)

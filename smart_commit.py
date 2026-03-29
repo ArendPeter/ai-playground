@@ -55,5 +55,3 @@ diff_output = subprocess.run(
 ).stdout
 
 print(msg)
-
-print("some print message")

@@ -1,5 +1,9 @@
 import anthropic
 import subprocess
+import threading
+import sys
+import itertools
+import time
 
 diff_output = subprocess.run(
     ["git", "diff"],
@@ -8,6 +12,21 @@ diff_output = subprocess.run(
 ).stdout
 
 client = anthropic.Anthropic()
+
+stop_spinner = threading.Event()
+
+def spin():
+    for frame in itertools.cycle("|/-\\"):
+        if stop_spinner.is_set():
+            break
+        sys.stdout.write(f"\r{frame} Generating commit message...")
+        sys.stdout.flush()
+        time.sleep(0.1)
+    sys.stdout.write("\r" + " " * 40 + "\r")
+    sys.stdout.flush()
+
+spinner_thread = threading.Thread(target=spin)
+spinner_thread.start()
 
 message = client.messages.create(
     model="claude-opus-4-6",
@@ -19,6 +38,9 @@ message = client.messages.create(
         }
     ],
 )
+
+stop_spinner.set()
+spinner_thread.join()
 
 msg = message.content[0].text.strip().split("\n")[0]
 

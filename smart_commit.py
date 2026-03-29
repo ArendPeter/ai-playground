@@ -1,0 +1,35 @@
+import anthropic
+import subprocess
+
+diff_output = subprocess.run(
+    ["git", "diff"],
+    capture_output=True,
+    text=True,
+).stdout
+
+client = anthropic.Anthropic()
+
+message = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=1000,
+    messages=[
+        {
+            "role": "user",
+            "content": "Can you write a one line commit message for the following git diff? " + diff_output,
+        }
+    ],
+)
+
+print(message)
+
+msg = message.content[0].text.strip().split("\n")[0]
+
+diff_output = subprocess.run(
+    ["git", "add", "--all"],
+).stdout
+
+diff_output = subprocess.run(
+    ["git", "commit", "-m", msg],
+).stdout
+
+print(msg)

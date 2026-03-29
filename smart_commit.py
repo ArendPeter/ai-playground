@@ -21,7 +21,7 @@ def spin():
     while True:
         if stop_spinner.is_set():
             break
-        sys.stdout.write(f"\r{random.choice(icons)}...")
+        sys.stdout.write(f"\r    {random.choice(icons)}")
         # sys.stdout.write(f"\r{frame} Generating commit message...")
         sys.stdout.flush()
         time.sleep(0.5)

@@ -7,6 +7,8 @@ diff_output = subprocess.run(
     text=True,
 ).stdout
 
+print(diff_output)
+
 client = anthropic.Anthropic()
 
 message = client.messages.create(
@@ -19,8 +21,6 @@ message = client.messages.create(
         }
     ],
 )
-
-print(message)
 
 msg = message.content[0].text.strip().split("\n")[0]
 

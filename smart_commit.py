@@ -4,6 +4,7 @@ import threading
 import sys
 import itertools
 import time
+import random
 
 diff_output = subprocess.run(
     ["git", "diff"],

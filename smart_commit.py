@@ -16,15 +16,14 @@ client = anthropic.Anthropic()
 stop_spinner = threading.Event()
 
 def spin():
-    #icons = "|/-\\"
     icons = "🤔💭🧐⏰💡🤨👀🤖🤓😵‍💫🧠"
-    for frame in itertools.cycle(icons):
+    while True:
         if stop_spinner.is_set():
             break
-        sys.stdout.write(f"\r{frame}...")
+        sys.stdout.write(f"\r{random.choice(icons)}...")
         # sys.stdout.write(f"\r{frame} Generating commit message...")
         sys.stdout.flush()
-        time.sleep(0.1)
+        time.sleep(0.5)
     sys.stdout.write("\r" + " " * 40 + "\r")
     sys.stdout.flush()
 

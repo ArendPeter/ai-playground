@@ -5,6 +5,9 @@ import sys
 import itertools
 import time
 import random
+import os
+from dotenv import load_dotenv
+load_dotenv() 
 
 diff_output = subprocess.run(
     ["git", "diff"],
@@ -12,7 +15,9 @@ diff_output = subprocess.run(
     text=True,
 ).stdout
 
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(
+    api_key=os.getenv('SMART_COMMIT_API_KEY')
+)
 
 stop_spinner = threading.Event()
 

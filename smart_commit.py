@@ -15,6 +15,9 @@ diff_output = subprocess.run(
     text=True,
 ).stdout
 
+if os.getenv('SMART_COMMIT_API_KEY') is None:
+    raise Exception("SMART_COMMIT_API_KEY environment variable is not set. Please set it to your Anthropic API key.")
+
 client = anthropic.Anthropic(
     api_key=os.getenv('SMART_COMMIT_API_KEY')
 )

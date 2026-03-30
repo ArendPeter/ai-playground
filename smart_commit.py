@@ -35,22 +35,23 @@ def spin():
     sys.stdout.write("\r" + " " * 40 + "\r")
     sys.stdout.flush()
 
-spinner_thread = threading.Thread(target=spin)
+spinner_thread = threading.Thread(target=spin, daemon=True)
 spinner_thread.start()
 
-message = client.messages.create(
-    model="claude-opus-4-6",
-    max_tokens=1000,
-    messages=[
-        {
-            "role": "user",
-            "content": "Can you write a one line commit message for the following git diff? " + diff_output,
-        }
-    ],
-)
-
-stop_spinner.set()
-spinner_thread.join()
+try:
+    message = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=1000,
+        messages=[
+            {
+                "role": "user",
+                "content": "Can you write a one line commit message for the following git diff? " + diff_output,
+            }
+        ],
+    )
+finally:
+    stop_spinner.set()
+    spinner_thread.join()
 
 msg = message.content[0].text.strip().split("\n")[0]
 

@@ -10,7 +10,11 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 diff_output = subprocess.run(
-    ["git", "diff"],
+    ["git", "add", "--all"],
+).stdout
+
+diff_output = subprocess.run(
+    ["git", "diff", '--cached'],
     capture_output=True,
     text=True,
 ).stdout
@@ -57,9 +61,6 @@ finally:
 
 msg = message.content[0].text.strip().split("\n")[0]
 
-diff_output = subprocess.run(
-    ["git", "add", "--all"],
-).stdout
 
 diff_output = subprocess.run(
     ["git", "commit", "-m", msg],

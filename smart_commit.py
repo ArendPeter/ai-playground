@@ -9,23 +9,11 @@ import os
 from dotenv import load_dotenv
 load_dotenv() 
 
-diff_output = subprocess.run(
-    ["git", "add", "--all"],
-).stdout
-
-diff_output = subprocess.run(
-    ["git", "diff", '--cached'],
-    capture_output=True,
-    text=True,
-).stdout
-
+### Check Key
 if os.getenv('SMART_COMMIT_API_KEY') is None:
     raise Exception("SMART_COMMIT_API_KEY environment variable is not set. Please set it to your Anthropic API key.")
 
-client = anthropic.Anthropic(
-    api_key=os.getenv('SMART_COMMIT_API_KEY')
-)
-
+### Spinnner 
 stop_spinner = threading.Event()
 
 def spin():
@@ -41,6 +29,24 @@ def spin():
 
 spinner_thread = threading.Thread(target=spin, daemon=True)
 spinner_thread.start()
+
+### Git Commands
+subprocess.run(
+    ["git", "add", "--all"],
+    capture_output=True,
+)
+
+diff_output = subprocess.run(
+    ["git", "diff", '--cached'],
+    capture_output=True,
+    text=True,
+).stdout
+
+
+### AI Stuff
+client = anthropic.Anthropic(
+    api_key=os.getenv('SMART_COMMIT_API_KEY')
+)
 
 try:
     message = client.messages.create(
@@ -59,9 +65,9 @@ finally:
 
 msg = message.content[0].text.strip().split("\n")[0]
 
-
-diff_output = subprocess.run(
+subprocess.run(
     ["git", "commit", "-m", msg],
-).stdout
+    capture_output=True,
+)
 
 print(msg)

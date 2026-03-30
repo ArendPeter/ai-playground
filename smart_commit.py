@@ -38,6 +38,8 @@ def spin():
 spinner_thread = threading.Thread(target=spin, daemon=True)
 spinner_thread.start()
 
+print('diff_output: ', diff_output);
+
 try:
     message = client.messages.create(
         model="claude-opus-4-6",

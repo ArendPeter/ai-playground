@@ -15,9 +15,7 @@ subprocess.run(
     capture_output=True,
 )
 
-print(sys.argv, len(sys.argv))
-
-if len(sys.argv) > 1:
+if len(sys.argv) > 1 and sys.argv[1] != '':
     msg = sys.argv[1]
 else:
     ### Check Key

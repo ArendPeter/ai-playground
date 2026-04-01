@@ -23,5 +23,6 @@ export default async function ProjectPage({ params }: PageProps) {
     redirect("/");
   }
 
+  console.log(user, project)
   return <MainContent user={user} project={project} />;
 }

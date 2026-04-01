@@ -57,7 +57,7 @@ else:
             messages=[
                 {
                     "role": "user",
-                    "content": "Can you write a one line commit message for the following git diff? " + diff_output,
+                    "content": "Can you write commit message in less than 80 characters from a git diff? The message should consisely describe the main feature of diff, it's okay to skip minor aspects. Here's the diff: " + diff_output,
                 }
             ],
         )

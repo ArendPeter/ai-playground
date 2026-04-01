@@ -1,3 +1,18 @@
+### How to install this?
+### 
+### I aliased this this to gc in my command line here's my bash rc
+### 
+### ``` 
+###    gc(){
+###         python /c/w/ai-playground/smart_commit.py "$1"
+###    }
+### ```
+### 
+### How to use this?
+### 
+### So `gc "blah blah"`` is the equivalent of `git commit -m "blah blah"``, but doing just `gc` will use ai to generate the message for you
+### 
+
 import anthropic
 import subprocess
 import threading

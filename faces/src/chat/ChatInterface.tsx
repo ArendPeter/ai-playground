@@ -10,20 +10,8 @@ import { Message } from "ai";
 export function ChatInterface() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   //const { messages, input, handleInputChange, handleSubmit, status } = useChat();
-  const messages = [
-    {
-      id: '0',
-      role: 'user',
-      content: 'hello',
-    },
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'hi',
-    },
-  ] as Message[];
-
   const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -37,6 +25,22 @@ export function ChatInterface() {
     }
   }, [messages]);
 
+  const handleSubmit = (e) => {
+    setMessages([
+      ...messages,
+      {
+        id: ''+messages.length,
+        role: 'user',
+        content: e.target.value
+      } as Message
+    ] as Message[])
+    setInput('')
+  }
+
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value)
+  }
+
   return (
     <div className="flex flex-col h-full p-4 overflow-hidden">
       {/*<ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden">*/}
@@ -44,14 +48,14 @@ export function ChatInterface() {
           <MessageList messages={messages} isLoading={status === "streaming"} />
         </div>
       {/*</ScrollArea>*/}
-      {/*<div className="mt-4 flex-shrink-0">
+      <div className="mt-4 flex-shrink-0">
         <MessageInput
           input={input}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           isLoading={status === "submitted" || status === "streaming"}
         />
-      </div>*/}
+      </div>
     </div>
   );
 }

@@ -19,10 +19,11 @@ export function MessageInput({
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      const form = e.currentTarget.form;
-      if (form) {
-        form.requestSubmit();
-      }
+      handleSubmit(e)
+      //const form = e.currentTarget.form;
+      //if (form) {
+      //  form.requestSubmit();
+      //}
     }
   };
 

@@ -1,17 +1,19 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 
-const model = anthropic("claude-3-5-haiku-latest");
+const model = anthropic("claude-sonnet-4-6");
 
 export const answerMyQuestion = async (
   prompt: string,
 ) => {
-  const { text } = await generateText({
+  const result = await generateText({
     model,
     prompt,
   });
 
-  return text;
+  console.log(result)
+
+  return result.text;
 };
 
 (async () => {

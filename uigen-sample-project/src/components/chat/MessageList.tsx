@@ -11,6 +11,18 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isLoading }: MessageListProps) {
+  messages = [
+    {
+      id: '0',
+      role: 'user',
+      content: 'hello',
+    },
+    {
+      id: '1',
+      role: 'assistant',
+      content: 'hi',
+    },
+  ];
   if (messages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full px-4 text-center">

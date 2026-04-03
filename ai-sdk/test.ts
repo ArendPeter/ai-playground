@@ -14,8 +14,10 @@ export const answerMyQuestion = async (
   return text;
 };
 
-const answer = await answerMyQuestion(
-  "what is the chemical formula for dihydrogen monoxide?",
-);
+(async () => {
+  const answer = await answerMyQuestion(
+    "what is the chemical formula for dihydrogen monoxide?",
+  );
 
-console.log(answer);
+  console.log(answer);
+})();

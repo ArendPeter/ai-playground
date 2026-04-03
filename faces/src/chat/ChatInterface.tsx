@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
+import { Message } from "ai";
 //import { ScrollArea } from "@/components/ui/scroll-area";
 //import { useChat } from "@/lib/contexts/chat-context";
 
@@ -20,7 +21,7 @@ export function ChatInterface() {
       role: 'assistant',
       content: 'hi',
     },
-  ];
+  ] as Message[];
 
   const [input, setInput] = useState('');
 
@@ -43,14 +44,14 @@ export function ChatInterface() {
           <MessageList messages={messages} isLoading={status === "streaming"} />
         </div>
       {/*</ScrollArea>*/}
-      <div className="mt-4 flex-shrink-0">
+      {/*<div className="mt-4 flex-shrink-0">
         <MessageInput
           input={input}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           isLoading={status === "submitted" || status === "streaming"}
         />
-      </div>
+      </div>*/}
     </div>
   );
 }

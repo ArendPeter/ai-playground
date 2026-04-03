@@ -1,17 +1,17 @@
 "use client";
 
-import { Message } from "ai";
+import { CoreMessage, Message } from "ai";
 import { cn } from "@/lib/utils";
 import { User, Bot, Loader2 } from "lucide-react";
 {/*import { MarkdownRenderer } from "./MarkdownRenderer";*/}
 
 interface MessageListProps {
-  messages: Message[];
+  messages: CoreMessage[];
   isLoading?: boolean;
 }
 
 export function MessageList({ messages, isLoading }: MessageListProps) {
-  if (messages.length === 0) {
+  if (messages.length <= 1) {
     return (
       <div className="flex flex-col items-center justify-center h-full px-4 text-center"/>
     );
@@ -20,9 +20,8 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
   return (
     <div className="flex flex-col h-full overflow-y-auto px-4 py-6">
       <div className="space-y-6 max-w-4xl mx-auto w-full">
-        {messages.map((message) => (
+        {messages.slice(1).map((message, i) => (
           <div
-            key={message.id || message.content}
             className={cn(
               "flex gap-4",
               message.role === "user" ? "justify-end" : "justify-start"

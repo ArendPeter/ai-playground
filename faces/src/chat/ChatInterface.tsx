@@ -4,14 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
 import { Message } from "ai";
-//import { ScrollArea } from "@/components/ui/scroll-area";
-//import { useChat } from "@/lib/contexts/chat-context";
+
+import { anthropic, createAnthropic } from "@ai-sdk/anthropic";
+import { generateText } from "ai";
 
 export function ChatInterface() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   //const { messages, input, handleInputChange, handleSubmit, status } = useChat();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const anthropic = createAnthropic({
+    headers: { 'anthropic-dangerous-direct-browser-access': 'true' }
+  });
+  const model = anthropic("claude-sonnet-4-6");
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -25,16 +31,32 @@ export function ChatInterface() {
     }
   }, [messages]);
 
-  const handleSubmit = (e) => {
-    setMessages([
+  const handleSubmit = async (e) => {
+    let newMessages = [
       ...messages,
       {
         id: ''+messages.length,
         role: 'user',
         content: e.target.value
       } as Message
-    ] as Message[])
+    ] as Message[]
+    setMessages(newMessages)
+
     setInput('')
+
+    const {text} = await generateText({
+      model,
+      messages: newMessages,
+    });
+
+    setMessages([
+      ...newMessages,
+      {
+        id: ''+messages.length,
+        role: 'assistant',
+        content: text
+      } as Message
+    ] as Message[])
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {

@@ -9,6 +9,8 @@ import { getLanguageModel } from "@/lib/provider";
 import { generationPrompt } from "@/lib/prompts/generation";
 
 export async function POST(req: Request) {
+  console.log('API POST')
+
   const {
     messages,
     files,
@@ -78,6 +80,9 @@ export async function POST(req: Request) {
       }
     },
   });
+
+
+  console.log('result', await result.text)
 
   return result.toDataStreamResponse();
 }

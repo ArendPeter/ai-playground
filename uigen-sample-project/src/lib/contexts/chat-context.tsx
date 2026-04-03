@@ -33,6 +33,7 @@ export function ChatProvider({
 }: ChatContextProps & { children: ReactNode }) {
   const { fileSystem, handleToolCall } = useFileSystem();
 
+  console.log('initial messages', initialMessages)
   const {
     messages,
     input,

@@ -10,6 +10,7 @@ import { generateText } from "ai";
 import ayakaImg from "../assets/Ayaka.png";
 import janeImg from "../assets/Jane.png";
 import malloryImg from "../assets/Mallory.png";
+import { FaceSidebar } from "../FaceSidebar";
 
 const anthropicClient = createAnthropic({
   headers: { 'anthropic-dangerous-direct-browser-access': 'true' }
@@ -177,6 +178,7 @@ export function ChatInterface() {
       } as Message
     ]
 
+    console.log('calling generate')
     generateText({
       model,
       messages: toCoreMessages(m),
@@ -188,22 +190,25 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex flex-col h-full p-4 overflow-hidden">
-      <div style={{display: 'flex', flexDirection: 'row', gap: '20px'}}>
-        <button onClick={() => changeCharacter(0)}>{bots[0].name}</button>
-        <button onClick={() => changeCharacter(1)}>{bots[1].name}</button>
-      </div>
-      <hr/>
-      <div className="pr-4">
-        <MessageList messages={messages} isLoading={false} botIndex={botIndex}/>
-      </div>
-      <div className="mt-4 flex-shrink-0">
-        <MessageInput
-          input={input}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-          isLoading={false}
-        />
+    <div className="flex h-full overflow-hidden">
+      <FaceSidebar
+        selected={bots[botIndex].name}
+        onSelect={(index) => {
+          changeCharacter(index);
+        }}
+      />
+      <div className="flex flex-col flex-1 p-4 overflow-hidden">
+        <div className="pr-4">
+          <MessageList messages={messages} isLoading={false} botIndex={botIndex}/>
+        </div>
+        <div className="mt-4 flex-shrink-0">
+          <MessageInput
+            input={input}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            isLoading={false}
+          />
+        </div>
       </div>
     </div>
   );

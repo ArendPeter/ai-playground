@@ -14,7 +14,7 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isLoading, botIndex }: MessageListProps) {
-  let cutoff = 3;
+  let cutoff = 2;
 
   if (messages.length <= cutoff) {
     return (

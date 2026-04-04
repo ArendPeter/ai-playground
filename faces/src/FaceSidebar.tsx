@@ -15,7 +15,7 @@ interface FaceSidebarProps {
 
 export function FaceSidebar({ selected, onSelect }: FaceSidebarProps) {
   return (
-    <div className="h-full w-16 flex flex-col items-center gap-3 py-4 bg-white border-r border-neutral-200">
+    <div className="w-full flex flex-row items-center gap-3 px-4 py-2 bg-white border-b border-neutral-200">
       {faces.map(({ name, src, index }) => (
         <button
           key={name}

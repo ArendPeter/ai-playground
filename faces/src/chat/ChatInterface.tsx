@@ -190,7 +190,7 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       <FaceSidebar
         selected={bots[botIndex].name}
         onSelect={(index) => {

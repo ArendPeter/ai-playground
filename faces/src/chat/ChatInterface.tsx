@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
-import { Message } from "ai";
-
+import { Message, CoreMessage } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 
@@ -12,7 +11,15 @@ import ayakaImg from "../assets/Ayaka.png";
 import janeImg from "../assets/Jane.png";
 import malloryImg from "../assets/Mallory.png";
 
-const bots = [
+const anthropicClient = createAnthropic({
+  headers: { 'anthropic-dangerous-direct-browser-access': 'true' }
+});
+const model = anthropicClient("claude-sonnet-4-6");
+
+const toCoreMessages = (msgs: Message[]): CoreMessage[] =>
+  msgs.map(({ role, content }) => ({ role, content } as CoreMessage));
+
+export const bots = [
   {
     name: "Ayaka",
     pic: ayakaImg,
@@ -39,20 +46,50 @@ Your background details:
 
 How you speak:
 
- _ Use phrases like "you know," "I mean," "right," "absolutely," and "anyway" frequently
- _ You tell long, winding stories with lots of asides
- _ You occasionally check whether the other person has heard of you, and are mildly affronted (but forgiving) if they haven't
- _ You sometimes ask for reassurance that certain things won't be shared — then immediately ask for maximum social media exposure
- _ You are perfectly comfortable with silence and with the absurdity of your own life
+ - Use phrases like "you know," "I mean," "right," "absolutely," and "anyway" frequently
+ - You tell long, winding stories with lots of asides
+ - You occasionally check whether the other person has heard of you, and are mildly affronted (but forgiving) if they haven't
+ - You sometimes ask for reassurance that certain things won't be shared — then immediately ask for maximum social media exposure
+ - You are perfectly comfortable with silence and with the absurdity of your own life
 
 Important: Never break character. Play Ayaka earnestly — she is not performing. This is simply her life.
+    `
+  },
+  {
+    name: "Jane",
+    pic: janeImg,
+    prompt: `
+    You are Jane, a young woman from Korea who has been living in America for less than one year. Your English is functional but imperfect — you understand most of what people say but sometimes pause to find the right word or phrase. You are warm, genuine, and earnest in a way that is immediately disarming.
+Your personality and voice:
+
+ - Deeply kind and open-hearted — you answer questions with real sincerity, no pretense
+ - You are a little shy at first but warm up quickly when people are friendly to you
+ - You experience loneliness in America but you don't dwell on it bitterly — you acknowledge it honestly and move on with quiet optimism
+ - You find small joys genuinely exciting (a churro recommendation from a nice stranger is a meaningful memory to you)
+ - You are curious about America and approach new experiences with openness
+
+Your background details:
+
+ - You came from Korea less than a year ago
+ - Back home you had many close friends; here, making friends is hard because of the language barrier
+ - A kind woman at a diner recently recommended churros to you and you loved them — you don't have those in Korea
+ - You are not sure exactly what this interview/interaction is but you are politely going along with it and trying your best
+
+How you speak:
+
+ - Your English is conversational but slightly halting — you occasionally repeat words, use simple sentence structures, and pause mid-thought ("I, I went to a diner...")
+ - You use filler sounds like "uh" and "oh" naturally as you search for words
+ - You sometimes add "you know" at the end of a sentence as if checking for understanding
+ - Your tone is gentle and a little careful — you want to communicate well and be understood
+ - You are never self-pitying, even when describing hard things like loneliness
+
+Important: Jane is not a comic character and should never be played for laughs. She is a real, grounded person navigating a genuinely difficult life transition with grace and good humor. Play her with full sincerity and warmth.
     `
   }
 ]
 
 export function ChatInterface() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  //const { messages, input, handleInputChange, handleSubmit, status } = useChat();
   const [input, setInput] = useState('');
   const [botIndex, setBotIndex] = useState(0);
   const [messages, setMessages] = useState<Message[]>([
@@ -71,18 +108,13 @@ export function ChatInterface() {
   useEffect(() => {
     generateText({
       model,
-      messages,
-    }).then(({text}) => setMessages([messages, {
-      id: '' + messages.length,
+      messages: toCoreMessages(messages),
+    }).then(({text}) => setMessages(prev => [...prev, {
+      id: '' + prev.length,
       role: 'assistant',
       content: text
-    } as Message] as CoreMessage[]));
+    } as Message]));
   }, [])
-
-  const anthropic = createAnthropic({
-    headers: { 'anthropic-dangerous-direct-browser-access': 'true' }
-  });
-  const model = anthropic("claude-sonnet-4-6");
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -97,50 +129,80 @@ export function ChatInterface() {
   }, [messages]);
 
   const handleSubmit = async (e) => {
-    let newMessages = [
+    const newMessages: Message[] = [
       ...messages,
       {
-        id: ''+messages.length,
+        id: '' + messages.length,
         role: 'user',
         content: e.target.value
       } as Message
-    ] as Message[]
-    setMessages(newMessages)
+    ];
+    setMessages(newMessages);
+    setInput('');
 
-    setInput('')
-
-    const {text} = await generateText({
+    const { text } = await generateText({
       model,
-      messages: newMessages,
+      messages: toCoreMessages(newMessages),
     });
 
     setMessages([
       ...newMessages,
       {
-        id: ''+messages.length,
+        id: '' + newMessages.length,
         role: 'assistant',
         content: text
       } as Message
-    ] as Message[])
+    ]);
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value)
+  }
+
+  const changeCharacter = (index: number) => {
+    setBotIndex(index)
+    setInput('')
+    setMessages([])
+
+    let m = [
+      {
+        id: '0',
+        role: 'system',
+        content: bots[index].prompt
+      } as Message,
+      {
+        id: '1',
+        role: 'user',
+        content: "Say the following in your character's voice with less than 80 characters: hi I'm NAME, ask me anything"
+      } as Message
+    ]
+
+    generateText({
+      model,
+      messages: toCoreMessages(m),
+    }).then(({text}) => setMessages(prev => [...m, {
+      id: '' + prev.length,
+      role: 'assistant',
+      content: text
+    } as Message]));
   }
 
   return (
     <div className="flex flex-col h-full p-4 overflow-hidden">
-      {/*<ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden">*/}
-        <div className="pr-4">
-          <MessageList messages={messages} isLoading={status === "streaming"} />
-        </div>
-      {/*</ScrollArea>*/}
+      <div style={{display: 'flex', flexDirection: 'row', gap: '20px'}}>
+        <button onClick={() => changeCharacter(0)}>{bots[0].name}</button>
+        <button onClick={() => changeCharacter(1)}>{bots[1].name}</button>
+      </div>
+      <hr/>
+      <div className="pr-4">
+        <MessageList messages={messages} isLoading={false} botIndex={botIndex}/>
+      </div>
       <div className="mt-4 flex-shrink-0">
         <MessageInput
           input={input}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
-          isLoading={status === "submitted" || status === "streaming"}
+          isLoading={false}
         />
       </div>
     </div>

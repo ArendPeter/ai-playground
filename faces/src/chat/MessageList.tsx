@@ -1,27 +1,34 @@
 "use client";
 
-import { CoreMessage, Message } from "ai";
+import { Message } from "ai";
 import { cn } from "@/lib/utils";
 import { User, Bot, Loader2 } from "lucide-react";
+import ayakaImg from "../assets/Ayaka.png";
+import janeImg from "../assets/Jane.png";
 {/*import { MarkdownRenderer } from "./MarkdownRenderer";*/}
 
 interface MessageListProps {
-  messages: CoreMessage[];
+  messages: Message[];
   isLoading?: boolean;
+  botIndex: number;
 }
 
-export function MessageList({ messages, isLoading }: MessageListProps) {
-  if (messages.length <= 1) {
+export function MessageList({ messages, isLoading, botIndex }: MessageListProps) {
+  let cutoff = 3;
+
+  if (messages.length <= cutoff) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-4 text-center"/>
+      <div className="flex flex-col items-center justify-center h-full px-4 text-center">
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto px-4 py-6">
       <div className="space-y-6 max-w-4xl mx-auto w-full">
-        {messages.slice(1).map((message, i) => (
+        {messages.slice(cutoff).map((message) => (
           <div
+            key={message.id || message.content}
             className={cn(
               "flex gap-4",
               message.role === "user" ? "justify-end" : "justify-start"
@@ -30,7 +37,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
             {message.role === "assistant" && (
               <div className="flex-shrink-0">
                 <div className="w-9 h-9 rounded-lg bg-white border border-neutral-200 shadow-sm flex items-center justify-center">
-                  <Bot className="h-4.5 w-4.5 text-neutral-700" />
+                  <img src={[ayakaImg, janeImg][botIndex]}/>
                 </div>
               </div>
             )}

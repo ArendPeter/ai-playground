@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { User, Bot, Loader2 } from "lucide-react";
 import ayakaImg from "../assets/Ayaka.png";
 import janeImg from "../assets/Jane.png";
+import { bots } from "./ChatInterface";
 {/*import { MarkdownRenderer } from "./MarkdownRenderer";*/}
 
 interface MessageListProps {
@@ -37,7 +38,7 @@ export function MessageList({ messages, isLoading, botIndex }: MessageListProps)
             {message.role === "assistant" && (
               <div className="flex-shrink-0">
                 <div className="w-9 h-9 rounded-lg bg-white border border-neutral-200 shadow-sm flex items-center justify-center">
-                  <img src={[ayakaImg, janeImg][botIndex]}/>
+                  <img src={bots[botIndex].pic}/>
                 </div>
               </div>
             )}

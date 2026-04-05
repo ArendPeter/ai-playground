@@ -1,12 +1,6 @@
 "use client";
 
-import ayakaImg from "./assets/Ayaka.png";
-import janeImg from "./assets/Jane.png";
-
-const faces = [
-  { name: "Ayaka", src: ayakaImg, index: 0 },
-  { name: "Jane", src: janeImg, index: 1 },
-];
+import { bots } from "./chat/ChatInterface";
 
 interface FaceSidebarProps {
   selected?: string;
@@ -16,10 +10,10 @@ interface FaceSidebarProps {
 export function FaceSidebar({ selected, onSelect }: FaceSidebarProps) {
   return (
     <div className="w-full flex flex-row items-center gap-3 px-4 py-2 bg-white border-b border-neutral-200">
-      {faces.map(({ name, src, index }) => (
+      {bots.map(({ name, pic }, i) => (
         <button
           key={name}
-          onClick={() => onSelect?.(index)}
+          onClick={() => onSelect?.(i)}
           title={name}
           className={`w-10 h-10 rounded-full overflow-hidden ring-2 transition-all focus:outline-none focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${
             selected === name
@@ -28,7 +22,7 @@ export function FaceSidebar({ selected, onSelect }: FaceSidebarProps) {
           }`}
         >
           <img
-            src={src}
+            src={pic}
             alt={name}
             width={40}
             height={40}

@@ -84,7 +84,12 @@ else:
 
     print(msg)
 
-subprocess.run(
+result = subprocess.run(
     ["git", "commit", "-m", msg],
     capture_output=True,
+    text=True,
 )
+if result.returncode != 0:
+    print(result.stdout, end="")
+    print(result.stderr, end="", file=sys.stderr)
+sys.exit(result.returncode)

@@ -22,7 +22,10 @@ import time
 import random
 import os
 from dotenv import load_dotenv
-load_dotenv() 
+load_dotenv()
+
+# Windows consoles default to cp1252, which can't print the emoji spinner
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ### Git Commands
 subprocess.run(
@@ -58,6 +61,8 @@ else:
         ["git", "diff", '--cached'],
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     ).stdout
 
     ### AI Stuff
@@ -88,6 +93,8 @@ result = subprocess.run(
     ["git", "commit", "-m", msg],
     capture_output=True,
     text=True,
+    encoding="utf-8",
+    errors="replace",
 )
 if result.returncode != 0:
     print(result.stdout, end="")

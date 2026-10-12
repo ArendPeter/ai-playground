@@ -13,14 +13,13 @@
 ### So `gc "blah blah"`` is the equivalent of `git commit -m "blah blah"``, but doing just `gc` will use ai to generate the message for you
 ### 
 
-import anthropic
 import subprocess
 import threading
 import sys
-import itertools
 import time
 import random
 import os
+import shutil
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -36,9 +35,9 @@ subprocess.run(
 if len(sys.argv) > 1 and sys.argv[1] != '':
     msg = sys.argv[1]
 else:
-    ### Check Key
-    if os.getenv('SMART_COMMIT_API_KEY') is None:
-        raise Exception("SMART_COMMIT_API_KEY environment variable is not set. Please set it to your Anthropic API key.")
+    ### Check CLI
+    if shutil.which("claude") is None:
+        sys.exit("claude CLI not found on PATH. Install Claude Code, then run `claude setup-token` and put CLAUDE_CODE_OAUTH_TOKEN in .env.")
 
     ### Spinnner
     stop_spinner = threading.Event()
@@ -66,26 +65,36 @@ else:
     ).stdout
 
     ### AI Stuff
-    client = anthropic.Anthropic(
-        api_key=os.getenv('SMART_COMMIT_API_KEY')
+    prompt = (
+        "Write a git commit message under 80 characters for the diff on stdin. "
+        "Concisely describe the main change; it's okay to skip minor aspects. "
+        "Reply with only the message, no quotes or explanation."
     )
 
+    # An API key in the environment would take precedence over the subscription token
+    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
+
     try:
-        message = client.messages.create(
-            model="claude-opus-4-6",
-            max_tokens=1000,
-            messages=[
-                {
-                    "role": "user",
-                    "content": "Can you write commit message in less than 80 characters from a git diff? The message should consisely describe the main feature of the diff, it's okay to skip minor aspects. Here's the diff: " + diff_output,
-                }
-            ],
+        # Diff goes via stdin to stay under Windows' command-line length limit
+        claude_result = subprocess.run(
+            ["claude", "-p", prompt, "--model", "sonnet"],
+            input=diff_output,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
         )
     finally:
         stop_spinner.set()
         spinner_thread.join()
 
-    msg = message.content[0].text.strip().split("\n")[0]
+    if claude_result.returncode != 0:
+        sys.exit(f"claude failed:\n{claude_result.stdout}{claude_result.stderr}")
+
+    msg = claude_result.stdout.strip().split("\n")[0]
+    if not msg:
+        sys.exit("claude returned an empty commit message")
 
     print(msg)
 
